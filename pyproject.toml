@@ -1,0 +1,14 @@
+[project]
+name = "pta-ciencia-de-dados"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "agno>=2.3.4",
+    "google-genai>=1.52.0",
+    "knowledge>=0.3",
+    "lancedb>=0.25.3",
+    "pypdf>=6.4.0",
+    "tavily-python>=0.7.13",
+]
