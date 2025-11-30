@@ -1,12 +1,19 @@
 from agno.team import Team
 
-from .another import another_agent
-from .dummy import dummy_agent
+from app.agents.home_agent import create_home_agent
+from app.agents.construcao_agent import create_construcao_agent
+from app.agents.tech_agent import create_tech_agent
+from app.agents.router_leader import create_router
 
-team = Team(
-    name="Example Team",
-    mode="route",
-    members=[dummy_agent, another_agent],
-    instructions="This team is designed to handle example tasks.",
-    show_members_responses=True
-)
+
+def build_team():
+    router = create_router()
+    home = create_home_agent()
+    const = create_construcao_agent()
+    tech = create_tech_agent()
+
+    return Team(
+        leader=router,
+        agents=[home, const, tech],
+        mode="route"
+    )
