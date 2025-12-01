@@ -1,4 +1,3 @@
-# Importações corretas para a versão atual da Agno
 from agno.knowledge.pdf import PDFKnowledgeBase, PDFReader
 from agno.knowledge.csv import CSVKnowledgeBase
 from agno.knowledge.combined import CombinedKnowledgeBase
@@ -6,25 +5,23 @@ from agno.vectordb.lancedb import LanceDb, SearchType
 
 # Configurando onde o banco vetorial ficará salvo
 db_vetorial = LanceDb(
-    nome = "base_vetorial",
+    name = "base_vetorial",
     uri = "./dbvetorial", # pasta será criada aqui
     search_type = SearchType.hybrid # Busca híbrida (tanto por palavras-chave, quanto por semântica)
 )
 
-pdf_knowledge = PDFKnowledgeBase( # ajustar o nome
-    path = "data/", # colocar o caminho para o pdf
+def realizar_alimentacao(path_pasta, path_pagina_planilha):
+
+    pdf_knowledge = PDFKnowledgeBase( 
+    path = path_pasta, 
     vector_db = db_vetorial,
     reader = PDFReader(chunk=True) # para realizar o chunking (quebra de texto em pedaços menores, mas ainda com semântica completa
-)
+    )
 
-csv_knowledge = CSVKnowledgeBase(
-    path = "", # caminho da planilha
+    csv_knowledge = CSVKnowledgeBase(
+    path = path_pagina_planilha, 
     vector_db = db_vetorial
-)
-
-def realizar_alimentacao():
-
-    # TO DO terminar de adequar essa função às especificações do projeto (separação por categorias, iteração sobre os pdfs, etc)
+    )
 
     print("Recolhendo as informações dos PDFs...")
     pdf_knowledge.load(recreate=True) # recreate=True zera o banco de dados e recria-o
@@ -34,6 +31,7 @@ def realizar_alimentacao():
 
     print("Alimentação bem-sucedida!")
 
+'''
 if __name__ == "__main__":
-    realizar_alimentacao()
-
+    realizar_alimentacao(path_pasta, path_pagina_planilha)
+'''
