@@ -1,12 +1,12 @@
 from agno.agent import Agent
-from agno.models.google import GoogleGenAIChat
-from agno.knowledge import Knowledge
+from agno.models.google import Gemini
+from agno.knowledge.knowledge import Knowledge
 
 CONSTRUCAO_PDFS = "data/jardinagem_construcao_alimentos_servicos"
 
 def create_construcao_agent():
     return Agent(
-        model=GoogleGenAIChat(id="gemini-1.5-flash"),
+        model=Gemini(id="gemini-2.0-flash"),
         name="ConstrucaoExpert",
         description=(
             "Você é o especialista de CONSTRUÇÃO/JARDINAGEM da O-Market. "
