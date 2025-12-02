@@ -1,16 +1,17 @@
-from agno.os import AgentOS  
-from agno.agent import Agent  
-
 from app.agents.casa import create_home_agent  # seu agente já configurado
 
 agent = create_home_agent()
 
-agent_os = AgentOS(
-    agents=[agent],
-    # você pode passar mais agentes, equipes ou workflows se tiver
-)
+print("\n=== HomeExpert da O-Market ===")
+print("Digite sua pergunta (ou 'exit' para sair).")
+print("-------------------------------------------")
 
-app = agent_os.get_app()
+while True:
+    pergunta = input("\nVocê: ")
 
-if __name__ == "__main__":
-    agent_os.serve(app="agentos:app", reload=True)
+    if pergunta.lower() in ["exit", "sair", "quit"]:
+        print("Encerrando...")
+        break
+
+    resposta = agent.run(pergunta)
+    print("\nHomeExpert:", resposta)
