@@ -1,10 +1,13 @@
 import os # ajuda a encontrar as pastas corretamente, mesmo em sistemas operacionais diferentes 
 from agno.knowledge import Knowledge
 from agno.knowledge.reader.pdf_reader import PDFReader
-from agno.knowledge.reader.csv_reader import CSVReader
 from agno.vectordb.lancedb import LanceDb, SearchType
 from agno.knowledge.embedder.google import GeminiEmbedder
 from pathlib import Path
+
+from dotenv import load_dotenv # Você precisará instalar: pip install python-dotenv
+
+load_dotenv() # Isso carrega o arquivo .env para o sistema
 
 # Configurando onde o banco vetorial ficará salvo
 
@@ -25,23 +28,15 @@ def criar_banco_vetorial(nome_banco_vetorial):
 
     return db
 
-def realizar_alimentacao(path_pasta, path_pagina_planilha, db):
+def realizar_alimentacao(path_pasta, db):
 
     if not os.path.exists(path_pasta):
         print(f"O caminho para a pasta {path_pasta} é inválido.")
         return # para sair da função caso dê esse erro
-
-    elif not os.path.exists(path_pagina_planilha):
-        print(f"O caminho para a página da planilha {path_pagina_planilha} é inválido.")
-        return 
     
-    # se chegar a essa linha, é porque encontrou os dois caminhos 
+    # se chegar a essa linha, é porque encontrou o caminho da pasta com os PDFs
     
-    pdf_knowledge = Knowledge( # tiramos as declarações dos leitores de dentro de pdf_knowledge e csv_knowledge porque os leitores são declarados depois, dentro de add_contents
-        vector_db = db
-    )
-
-    csv_knowledge = Knowledge(
+    pdf_knowledge = Knowledge( # tiramos as declarações dos leitores de dentro de pdf_knowledge porque os leitores são declarados depois, dentro de add_contents
         vector_db = db
     )
 
@@ -49,32 +44,18 @@ def realizar_alimentacao(path_pasta, path_pagina_planilha, db):
 
     pdfs = []
 
+    path_pasta = Path(path_pasta)
+
     for arquivo_pdf in path_pasta.glob("*.pdf"):
         print(f"Lendo: {arquivo_pdf.name}")
-        pdfs_arquivo = PDFReader(chunk=True).read(file=arquivo_pdf)
+        pdfs_arquivo = PDFReader(chunk=True).read(pdf=arquivo_pdf)
         pdfs.extend(pdfs_arquivo)
 
-    pdf_knowledge.load(pdfs)
+    if pdfs:
+        print(f"Inserindo {len(pdfs)} fragmentos no banco...")
+        pdf_knowledge.vector_db.insert(documents=pdfs, content_hash="carga_manual_pdfs")
+        print("Ingestão concluída!")
+    else:
+        print("Nenhum PDF encontrado ou lido.")
 
-    print("Recolhendo as informações da planilha...")
-
-    csv_knowledge.add_contents(
-    CSVReader(chunk=True).read(file=path_pagina_planilha)
-    )
-    
-    print("Alimentação bem-sucedida!")
-
-'''
-# --- Bloco de Execução Direta (Corrigido) ---
-if __name__ == "__main__":
-    # 1. Defina caminhos reais ou de teste aqui
-    pasta = "./meus_pdfs" # Garanta que essa pasta existe
-    planilha = "./dados.csv" # Garanta que esse arquivo existe
-    nome_do_banco = "banco_teste_main"
-
-    # 2. Cria o objeto do banco PRIMEIRO
-    meu_banco = criar_banco_vetorial(nome_do_banco)
-
-    # 3. Chama a função passando os 3 argumentos
-    realizar_alimentacao(pasta, planilha, meu_banco)
-'''
+    return pdf_knowledge
