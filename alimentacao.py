@@ -4,6 +4,7 @@ from agno.knowledge.reader.pdf_reader import PDFReader
 from agno.knowledge.reader.csv_reader import CSVReader
 from agno.vectordb.lancedb import LanceDb, SearchType
 from agno.knowledge.embedder.google import GeminiEmbedder
+from pathlib import Path
 
 # Configurando onde o banco vetorial ficará salvo
 
@@ -46,18 +47,24 @@ def realizar_alimentacao(path_pasta, path_pagina_planilha, db):
 
     print("Recolhendo as informações dos PDFs...")
 
-    pdf_knowledge.add_contents(
-    PDFReader(chunk=True).read(path=path_pasta)
-    )
+    pdfs = []
+
+    for arquivo_pdf in path_pasta.glob("*.pdf"):
+        print(f"Lendo: {arquivo_pdf.name}")
+        pdfs_arquivo = PDFReader(chunk=True).read(file=arquivo_pdf)
+        pdfs.extend(pdfs_arquivo)
+
+    pdf_knowledge.load(pdfs)
 
     print("Recolhendo as informações da planilha...")
 
     csv_knowledge.add_contents(
-    CSVReader(chunk=True).read(path=path_pagina_planilha)
+    CSVReader(chunk=True).read(file=path_pagina_planilha)
     )
     
     print("Alimentação bem-sucedida!")
 
+'''
 # --- Bloco de Execução Direta (Corrigido) ---
 if __name__ == "__main__":
     # 1. Defina caminhos reais ou de teste aqui
@@ -70,3 +77,4 @@ if __name__ == "__main__":
 
     # 3. Chama a função passando os 3 argumentos
     realizar_alimentacao(pasta, planilha, meu_banco)
+'''
