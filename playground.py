@@ -1,4 +1,4 @@
-from app.agents.casa import create_home_agent  # seu agente já configurado
+from app.agents.home_agent import create_home_agent 
 
 agent = create_home_agent()
 
@@ -14,4 +14,4 @@ while True:
         break
 
     resposta = agent.run(pergunta)
-    print("\nHomeExpert:", resposta)
+    print("\nHomeExpert:", resposta.content)
