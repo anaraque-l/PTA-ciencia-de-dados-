@@ -14,6 +14,7 @@ load_dotenv() # Isso carrega o arquivo .env para o sistema
 
 def criar_banco_vetorial(nome_banco_vetorial, area):
 
+
     db = ChromaDb(
         path=f"chromadb_storage/{area}_rag",
         collection=f"{nome_banco_vetorial}",
@@ -53,4 +54,4 @@ def realizar_alimentacao(path_pasta, db):
     else:
         print("Nenhum PDF encontrado ou lido.")
 
-    return pdf_knowledge
+
