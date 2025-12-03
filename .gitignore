@@ -210,3 +210,6 @@ __marimo__/
 .vscode/
 __pycache__/
 *.env
+
+teste_agente_construcao.py
+teste_ingestao.py

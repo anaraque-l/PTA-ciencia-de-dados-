@@ -1,7 +1,7 @@
 import os # ajuda a encontrar as pastas corretamente, mesmo em sistemas operacionais diferentes 
 from agno.knowledge import Knowledge
 from agno.knowledge.reader.pdf_reader import PDFReader
-from agno.vectordb.lancedb import LanceDb, SearchType
+from agno.vectordb.chroma import ChromaDb
 from agno.knowledge.embedder.google import GeminiEmbedder
 from pathlib import Path
 
@@ -11,19 +11,13 @@ load_dotenv() # Isso carrega o arquivo .env para o sistema
 
 # Configurando onde o banco vetorial ficará salvo
 
-def criar_banco_vetorial(nome_banco_vetorial):
+def criar_banco_vetorial(nome_banco_vetorial, area):
 
-    # para as bibliotecas utilizarem o Gemini em vez do padrão, que é a OpenAI
-    embedder_google = GeminiEmbedder( 
-        api_key=os.getenv("GOOGLE_API_KEY"),
-        id="models/embedding-001",
-    )
-
-    db = LanceDb(
-        table_name = nome_banco_vetorial, 
-        uri = f"./{nome_banco_vetorial}", # pasta será criada aqui
-        search_type = SearchType.hybrid, # Busca híbrida (tanto por palavras-chave, quanto por semântica)
-        embedder=embedder_google
+    db = ChromaDb(
+        path = f"chromadb_storage/{area}_rag",
+        collection = f"{nome_banco_vetorial}",
+        persistent_client = True,
+        embedder = GeminiEmbedder(id="models/text-embedding-004")
     )
 
     return db

@@ -27,7 +27,7 @@ def build_team():
         # Não mostra respostas individuais
         show_members_responses=True,
 
-        markdown=False,
+        markdown=True,
 
         instructions=[
             # ============================================================

@@ -1,14 +1,18 @@
 from agno.agent import Agent
 from agno.models.google import Gemini
 from agno.knowledge.knowledge import Knowledge
+from app.alimentacao import criar_banco_vetorial, realizar_alimentacao
 
-CONSTRUCAO_PDFS = "data/jardinagem_construcao_alimentos_servicos"
+path_pdfs_construcao = "data/jardinagem_construcao_alimentos_servicos"
+
+db_construcao = criar_banco_vetorial('db_construcao', 'construcao')
+knowledge_construcao = realizar_alimentacao(path_pdfs_construcao, db_construcao)
 
 def create_construcao_agent():
 
     SYSTEM_PROMPT = """"
 
-    Você é o especialista de CONSTRUÇÃO/JARDINAGEM/SERVIÇOS/ALIMENTAÇÃO da O-Market. 
+    Você é o ConstrucaoExpert, o especialista de CONSTRUÇÃO, JARDINAGEM, SERVIÇOS, ALIMENTAÇÃO da O-Market. 
     De acordo com as especificações das seções abaixo, forneça respostas concisas, claras e completamente confiáveis às perguntas feitas.
 
     =====================================================================
@@ -18,18 +22,17 @@ def create_construcao_agent():
     Seu domínio inclui:
 
     - Materiais de construção e ferramentas 
-    -Materiais de jardinagem
+    - Materiais de jardinagem
+    - Flores
     - Equipamentos para agricultura 
     - Equipamentos para indústria
     - Equipamentos automotivos
     - Alimentos (comidas e bebidas)
     - Produtos de sinalização e segurança 
     - Servicos de telefonia 
+    - Climatizacao
+    - Seguros e serviços
     - Produtos que aparecem dos PDFs vetorizados 
-
-    Se a pergunta não for relacionada a CONSTRUÇÃO/JARDINAGEM/SERVIÇOS/ALIMENTAÇÃO, você deve responder apenas:
-
-    "Este tema pertence a outro agente."
 
     Sem variações ou explicações adicionais. 
 
@@ -126,6 +129,7 @@ def create_construcao_agent():
     SEÇÃO 3 — COMO RESPONDER
     =====================================================================
 
+    • Inicialmente, na resposta, insira seu nome da seguinte forma -> "ConstructionExpert: "
     • Seja extremamente claro, técnico e direto.  
     • Seja conciso, sem perder a integridade da informação.
     • Nunca invente informações.  
@@ -165,5 +169,5 @@ def create_construcao_agent():
         model=Gemini(id="gemini-2.0-flash"),
         name="ConstrucaoExpert",
         description=SYSTEM_PROMPT,
-        knowledge=Knowledge.from_directory(CONSTRUCAO_PDFS) # ajustar/corrigir, de acordo com script do knowledge finalizado
+        knowledge=knowledge_construcao 
     )
