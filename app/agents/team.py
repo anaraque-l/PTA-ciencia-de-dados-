@@ -1,6 +1,7 @@
 from agno.team import Team
 from agno.models.google import Gemini
 
+
 from app.agents.tech_agent import create_tech_agent
 from app.agents.home_agent import create_home_agent
 from app.agents.construcao_agent import create_construcao_agent
@@ -11,12 +12,15 @@ def build_team():
     home = create_home_agent()                
     construcao = create_construcao_agent()    
 
+
     return Team(
         name="O-Market Team",
         model=Gemini(id="gemini-2.0-flash-lite"),
 
         # SOMENTE membros especialistas
+
         members=[tech, home, construcao],
+
 
         # O TeamLeader (interno do Agno) NÃO responde sozinho
         respond_directly=False,

@@ -1,3 +1,4 @@
+
 import os # ajuda a encontrar as pastas corretamente, mesmo em sistemas operacionais diferentes 
 from agno.knowledge import Knowledge
 from agno.knowledge.reader.pdf_reader import PDFReader
@@ -53,4 +54,4 @@ def realizar_alimentacao(path_pasta, db):
     else:
         print("Nenhum PDF encontrado ou lido.")
 
-    return pdf_knowledge
+
