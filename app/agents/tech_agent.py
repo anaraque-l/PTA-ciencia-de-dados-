@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.google import Gemini
 
-from app.alimentacao import criar_banco_vetorial, realizar_alimentacao
+from app.alimentacao import criar_banco_vetorial
 
 load_dotenv()
 
@@ -13,8 +13,15 @@ TECH_PDFS_DIR = "data/midia_eletronicos_artes_papelaria"
 
 def create_tech_agent():
 
+    # 1. Apenas aponta para o banco já ingestido
     vector_db = criar_banco_vetorial("tech_rag", "tech")
-    knowledge = realizar_alimentacao(TECH_PDFS_DIR, vector_db)
+
+    # 2. NÃO chamamos realizar_alimentacao aqui
+    # (se chamar, duplica ou sobrescreve!)
+
+    # 3. Cria o Knowledge limpo, apontando para o vector_db certo
+    from agno.knowledge import Knowledge
+    knowledge = Knowledge(vector_db=vector_db)
 
 
     SYSTEM_PROMPT = """
@@ -60,7 +67,7 @@ Para responder, você deve:
 =====================================================================
 FORMATO DAS RESPOSTAS
 =====================================================================
- . Inicialmente, na sua resposta insira seu nome da seguinte forma -> "TechExpert: "
+ MUITO IMPORTANTEEEEEEEE Inicialmente, na sua resposta insira seu nome da seguinte forma -> "TechExpert: "
 • Seja objetivo, claro e fiel ao conteúdo.
 • Organize em tópicos, listas ou seções quando útil.
 • Não adicione frases genéricas ou teorias.
