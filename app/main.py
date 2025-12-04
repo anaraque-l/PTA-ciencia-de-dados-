@@ -1,16 +1,18 @@
-from agno.playground import Playground
+from agno.playground import Playground, serve_playground_app
 from fastapi.responses import HTMLResponse, RedirectResponse
 from contextlib import asynccontextmanager
 from fastapi import Request
 from urllib.parse import quote
 from app.agents.team import build_team
 
+
 team=build_team()
 
 app = Playground(
     name="Example Playground",
     description="A playground for testing agents.",
-    teams=[team]
+    teams=[team],
+ 
 ).get_app()
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
