@@ -1,0 +1,10 @@
+{
+    "python.defaultInterpreterPath": "/Users/sierra/PTA-ciencia-de-dados-/.venv/bin/python",
+    "python.analysis.extraPaths": [
+        "/Users/sierra/PTA-ciencia-de-dados-/.venv/lib/python3.13/site-packages"
+    ],
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none"
+    }
+}
