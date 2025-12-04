@@ -20,8 +20,8 @@ def create_tech_agent():
     # (se chamar, duplica ou sobrescreve!)
 
     # 3. Cria o Knowledge limpo, apontando para o vector_db certo
-    from agno.knowledge import Knowledge
-    knowledge = Knowledge(vector_db=vector_db)
+    from agno.knowledge.agent import AgentKnowledge
+    knowledge = AgentKnowledge(vector_db=vector_db)
 
 
     SYSTEM_PROMPT = """

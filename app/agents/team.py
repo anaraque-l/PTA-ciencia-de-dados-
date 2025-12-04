@@ -1,6 +1,6 @@
 from agno.team import Team
 from agno.models.google import Gemini
-
+from app.storage import get_team_storage
 
 from app.agents.tech_agent import create_tech_agent
 from app.agents.home_agent import create_home_agent
@@ -22,11 +22,9 @@ def build_team():
         members=[tech, home, construcao],
 
 
-        # O TeamLeader (interno do Agno) NÃO responde sozinho
-        respond_directly=False,
+        storage=get_team_storage(),
 
-        # O TeamLeader vai decidir qual membro usar
-        determine_input_for_members=True,
+       
 
         # Não mostra respostas individuais
         show_members_responses=True,

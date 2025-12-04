@@ -3,8 +3,7 @@ load_dotenv()
 
 from agno.agent import Agent
 from agno.models.google import Gemini
-from agno.knowledge import Knowledge
-
+from agno.knowledge.agent import AgentKnowledge
 from app.alimentacao import criar_banco_vetorial
 
 
@@ -14,7 +13,7 @@ def create_construcao_agent():
     vector_db = criar_banco_vetorial("construcao_rag", "construcao")
 
     # 2 — NÃO fazemos realizar_alimentacao aqui
-    knowledge = Knowledge(vector_db=vector_db)
+    knowledge = AgentKnowledge(vector_db=vector_db)
 
     SYSTEM_PROMPT = """
     Você é o ConstrucaoExpert, o especialista de CONSTRUÇÃO, JARDINAGEM, SERVIÇOS, ALIMENTAÇÃO da O-Market. 

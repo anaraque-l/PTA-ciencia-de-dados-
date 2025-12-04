@@ -3,7 +3,7 @@ load_dotenv()
 
 from agno.agent import Agent
 from agno.models.google import Gemini
-from agno.knowledge import Knowledge
+from agno.knowledge.agent import AgentKnowledge
 
 from app.alimentacao import criar_banco_vetorial
 
@@ -14,7 +14,7 @@ def create_home_agent():
     vector_db = criar_banco_vetorial("home_rag", "home")
 
     # 2. NÃO chamar realizar_alimentacao aqui (para não duplicar)
-    knowledge = Knowledge(vector_db=vector_db)
+    knowledge = AgentKnowledge(vector_db=vector_db)
 
     SYSTEM_PROMPT = """
 Você é o **HomeExpert da O-Market**, agente especialista oficial responsável por
