@@ -3,17 +3,14 @@ load_dotenv()
 
 from agno.agent import Agent
 from agno.models.google import Gemini
-from agno.knowledge.agent import AgentKnowledge
-from app.alimentacao import criar_banco_vetorial
+
+# IMPORTA O KNOWLEDGE GERADO PELA INGESTÃO
+from ingest import knowledge_construcao
 
 
 def create_construcao_agent():
 
-    # 1 — Carrega apenas o banco vetorial já ingestido
-    vector_db = criar_banco_vetorial("construcao_rag", "construcao")
-
-    # 2 — NÃO fazemos realizar_alimentacao aqui
-    knowledge = AgentKnowledge(vector_db=vector_db)
+    
 
     SYSTEM_PROMPT = """
     Você é o ConstrucaoExpert, o especialista de CONSTRUÇÃO, JARDINAGEM, SERVIÇOS, ALIMENTAÇÃO da O-Market. 
@@ -90,8 +87,10 @@ def create_construcao_agent():
     """
 
     return Agent(
-        model=Gemini(id="gemini-2.0-flash"),
+        model=Gemini(id="gemini-2.5-flash"),
         name="ConstrucaoExpert",
         description=SYSTEM_PROMPT,
-        knowledge=knowledge,   # recomendado para o Agno usar RAG de verdade
+
+        # AQUI ESTÁ A CORREÇÃO DEFINITIVA
+        knowledge=knowledge_construcao,
     )

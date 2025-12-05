@@ -27,7 +27,7 @@ def criar_banco_vetorial(nome_banco_vetorial: str, area: str) -> ChromaDb:
     return db
 
 
-def realizar_alimentacao(path_pasta: str, db: ChromaDb) -> None:
+def realizar_alimentacao(path_pasta: str, db: ChromaDb) -> AgentKnowledge:
     """
     Lê PDFs usando PDFPlumberReader (novo na versão 2.x),
     gera Document chunks e insere no ChromaDb via AgentKnowledge.
@@ -35,34 +35,35 @@ def realizar_alimentacao(path_pasta: str, db: ChromaDb) -> None:
 
     if not os.path.exists(path_pasta):
         print(f"❌ Caminho inválido: {path_pasta}")
-        return
+        return None
     
     path_pasta = Path(path_pasta)
 
-    # knowledge = casca necessária para inserir no banco
     knowledge = AgentKnowledge(vector_db=db)
 
     print("📄 Lendo PDFs da pasta...")
 
     documentos: list[Document] = []
 
-    reader = PDFReader(chunk=True)  # substitui PDFReader
+    reader = PDFReader(chunk=True)
 
     for pdf_file in path_pasta.glob("*.pdf"):
         if not pdf_file.is_file():
             continue
 
         print(f"➡️ Lendo: {pdf_file.name}")
-
         chunks = reader.read(pdf_file)
         documentos.extend(chunks)
 
     if not documentos:
         print("⚠️ Nenhum PDF encontrado ou lido.")
-        return
+        return None
 
     print(f"📥 Inserindo {len(documentos)} chunks no banco vetorial...")
 
     knowledge.load_documents(documents=documentos)
 
     print("✅ Ingestão concluída!")
+
+    return knowledge
+

@@ -15,7 +15,7 @@ def build_team():
 
     return Team(
         name="O-Market Team",
-        model=Gemini(id="gemini-2.0-flash"),
+        model=Gemini(id="gemini-2.5-flash"),
 
         # SOMENTE membros especialistas
 
@@ -29,7 +29,7 @@ def build_team():
         # Não mostra respostas individuais
         show_members_responses=True,
 
-        markdown=False,
+        markdown=True,
 
         instructions=[
     # ============================================================
@@ -83,6 +83,11 @@ def build_team():
     "- bebê",
     "- esportes e lazer",
     "- moda e acessórios",
+    "- artigos de festa",
+    "- artigos de natal",
+    "- pet shop",
+    "- utilidades domésticas",
+
 
     # ------------------------------------------------------------
     # ConstrucaoExpert — construção, jardinagem, automotivo, alimentos
@@ -98,6 +103,9 @@ def build_team():
     "- indústria e comércio",
     "- alimentos e bebidas",
     "- seguros e serviços",
+    "- telefonia",
+    
+
 
     # ============================================================
     # COMPORTAMENTO

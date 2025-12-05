@@ -11,4 +11,3 @@ knowledge_home = realizar_alimentacao("data/casa_familia_e_moda", db_home)
 # CONSTRUÇÃO
 db_construcao = criar_banco_vetorial("construcao_rag", "construcao")
 knowledge_construcao = realizar_alimentacao("data/jardinagem_construcao_alimentos_servicos", db_construcao)
-

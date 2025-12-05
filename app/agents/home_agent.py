@@ -3,18 +3,14 @@ load_dotenv()
 
 from agno.agent import Agent
 from agno.models.google import Gemini
-from agno.knowledge.agent import AgentKnowledge
 
-from app.alimentacao import criar_banco_vetorial
+# IMPORTANTE:
+# Importa o knowledge criado pela ingestão.
+# Ele já está populado com todos os PDFs vetorizados.
+from ingest import knowledge_home  
 
 
 def create_home_agent():
-
-    # 1. Apenas carrega o banco vetorial já ingestido previamente
-    vector_db = criar_banco_vetorial("home_rag", "home")
-
-    # 2. NÃO chamar realizar_alimentacao aqui (para não duplicar)
-    knowledge = AgentKnowledge(vector_db=vector_db)
 
     SYSTEM_PROMPT = """
 Você é o **HomeExpert da O-Market**, agente especialista oficial responsável por
@@ -103,7 +99,9 @@ Você é o especialista supremo e 100% confiável do domínio de casa, família 
 
     return Agent(
         name="HomeExpert",
-        model=Gemini(id="gemini-2.0-flash"),
-        knowledge=knowledge,
+        model=Gemini(id="gemini-2.5-flash"),
         description=SYSTEM_PROMPT,
+
+        # ✔ Usa o knowledge populado pela ingestão (NÃO recria vazio)
+        knowledge=knowledge_home,
     )
