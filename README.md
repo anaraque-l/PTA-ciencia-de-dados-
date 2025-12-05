@@ -1,123 +1,278 @@
-<!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  <a href="https://github.com/CITi-UFPE/PTA-ciencia-de-dados">
-    <img src="https://ci3.googleusercontent.com/mail-sig/AIorK4zWbC3U-G_vTTZE6rUQqJjzL8u7WNZjzhEaYi9z7slJn8vNhgnFVootxjm377GVCdPGY_F64WolHmGJ" alt="Logo" width="180px">
-  </a>
+# 🧠 O-MARKET — Sistema Multiagente de Ciência de Dados
 
-  <h3 align="center">PTA Ciência de Dados</h3>
+Este projeto implementa um **Sistema Multiagente com Agno** para responder perguntas técnicas sobre produtos da O-Market, utilizando **PDFs vetorizados como única fonte de verdade**.
 
-  <p align="center">
-  Este projeto foi criado em 2025.2 com a proposta de trazer a frente de ciência de dados para o Processo de Treinamento de Área (PTA) do CITi. Ele foi desenvolvido com base em práticas modernas de ciência de dados e tem como objetivo capacitar tecnicamente as pessoas aspirantes, alinhando-se às demandas atuais da empresa.
-    <br />
-    <a href="https://github.com/CITi-UFPE/PTA-ciencia-de-dados"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    ·
-    <a href="https://github.com/CITi-UFPE/PTA-ciencia-de-dados/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/CITi-UFPE/PTA-ciencia-de-dados/issues">Request Feature</a>
-  </p>
-</p>
+---
 
-<!-- TABLE OF CONTENTS -->
-<details open="open">
-  <summary><h2 style="display: inline-block">Tabela de Conteúdo</h2></summary>
-  <ol>
-    <li><a href="#sobre-o-projeto">Sobre o Projeto</a></li>
-    <li><a href="#como-instalar">Como Instalar</a></li>
-    <li><a href="#como-rodar">Como Rodar</a></li>
-    <li><a href="#contato">Contato</a></li>
-  </ol>
-</details>
+## 🎯 Objetivo
 
-<br/>
+Criar um ambiente em que qualquer usuário consiga perguntar:
 
-## Sobre o Projeto
-<br/>
+> “Esse produto tem suporte VESA?”
 
-Este projeto foi desenvolvido para o Processo de Treinamento de Área (PTA) do CITi, com foco em ciência de dados. Ele implementa uma arquitetura multiagentes orientada a dados, com componentes para ingestão, processamento e consulta, e expõe funcionalidades por meio de uma API construída com FastAPI. O objetivo principal do projeto é construir uma sistema multiagentes que consegue responder perguntas com base em dados específicos do cliente.
+E o sistema responda:
 
-<br/>
+> “TechExpert: Sim, conforme catálogo, o modelo X aceita suporte VESA 75×75 e 100×100.  
+> **Fontes:** catalogo_monitores.pdf”
 
-## Como Instalar
-<br/>
+---
 
-1. Certifique-se de que o **Python** e o **Docker Desktop** estão instalados em sua máquina.
+## 🛠 Tecnologias Utilizadas
 
-2. Clone o repositório:
+| Componente | Tecnologia |
+|---|---|
+| Linguagem | Python |
+| Multiagentes | Agno |
+| Modelo | Gemini 2.5-flash |
+| Embeddings | text-embedding-004 |
+| Vetor DB | ChromaDB |
+| Leitura de PDFs | PDFReader (chunk) |
+| Playground | Agno Cloud |
+| Ambiente | VSCode + venv |
 
-   ```sh
-   git clone https://github.com/CITi-UFPE/PTA-ciencia-de-dados.git
-   ```
+---
 
-3. Entre na pasta do projeto:
+## 📚 Fontes de Conhecimento
 
-   ```sh
-   cd PTA-ciencia-de-dados
-   ```
+Todos os dados vêm **exclusivamente dos PDFs** organizados em pastas:
 
-<br/>
+data/
+midia_eletronicos_artes_papelaria/
+casa_familia_moda/
+jardinagem_construcao_servicos/
 
-## Como Rodar
+css
+Copy code
 
-### Usando Docker
-<br/>
+Cada PDF é lido com:
 
-1. Certifique-se de que o Docker Desktop está em execução.
+```python
+reader = PDFReader(chunk=True)
+chunks = reader.read(pdf_file)
+Os chunks são enviados para o vetor DB:
 
-2. Suba os serviços com o Docker Compose:
+python
+Copy code
+knowledge.load_documents(documents=chunks)
+🧬 Arquitetura
+sql
+Copy code
++-------------------+
+|    Usuário Final  |
++---------+---------+
+          |
+          v
++---------+---------+
+|   Playground UI   |
++---------+---------+
+          |
+          v
++---------+---------+
+|   Router Agent    |
+| (decide domínio)  |
++---+-----------+---+
+    |           |
+    |           +--------------------+
+    |                                |
+    v                                v
++----------+                 +--------------+
+| TechExp. |                 | HomeExpert   |
++----------+                 +--------------+
+    |
+    v
++--------------------------------+
+| ConstrucaoExpert               |
++--------------------------------+
+Cada agente responde apenas se a pergunta pertence ao seu domínio.
 
-   ```sh
-   docker-compose up --build
-   ```
+🤖 Agentes Criados
+Agente	Domínio
+TechExpert	tecnologia, eletrônicos, áudio, PCs
+HomeExpert	casa, família, moda, beleza, pet
+ConstrucaoExpert	construção, jardinagem, serviços, alimentos
 
-3. Acesse a aplicação em seu navegador no endereço:
+📐 Regras de Domínio
+Cada agente possui regras rígidas.
 
-   ```
-   http://localhost:7777
-   ```
+Quando a pergunta é do domínio:
+makefile
+Copy code
+TechExpert:
+<resposta>
+Quando não é do domínio:
+css
+Copy code
+Este tema pertence a outro agente.
+🧠 Roteador
+O Roteador NUNCA responde ao usuário diretamente.
 
-4. Para acessar a documentação interativa da API (Swagger UI), vá para:
+Formato obrigatório:
 
-   ```
-   http://localhost:7777/docs
-   ```
+vbnet
+Copy code
+<delegate to="TechExpert">
+ou
 
-<br/>
+vbnet
+Copy code
+<delegate to="HomeExpert">
+ou
 
-### Localmente
-<br/>
+vbnet
+Copy code
+<delegate to="ConstrucaoExpert">
+Se não reconhecer, encaminha para TechExpert.
 
-1. Certifique-se de que esteja no diretório principal
+📌 Regras de Resposta dos Agentes
+Cada resposta deve:
 
-2. Instale as dependências: 
-    ```
-    pip install -r ./requirements.txt
-    ```
+✔ Começar com o nome do agente:
 
-3. Execute o projeto: 
-    ```
-    uvicorn app.main:app --port 7777
-    ```
+makefile
+Copy code
+TechExpert:
+HomeExpert:
+ConstrucaoExpert:
+✔ Usar somente dados dos PDFs
 
-4. Acesse a aplicação em seu navegador no endereço:
+✔ Citar fontes no final:
 
-   ```
-   http://localhost:7777
-   ```
+makefile
+Copy code
+Fontes: nome1.pdf, nome2.pdf
+✔ Se não houver dados suficientes:
 
-5. Para acessar a documentação interativa da API (Swagger UI), vá para:
+powershell
+Copy code
+Não há dados suficientes nos PDFs para responder.
+🗂 Banco Vetorial
+O armazenamento é persistente via ChromaDB.
 
-   ```
-   http://localhost:7777/docs
-   ```
+Pasta:
 
-<br/>
+Copy code
+chromadb_storage/
+Coleções:
 
+tech_rag
 
-## Contato
-<br/>
+home_rag
 
-- [CITi UFPE](https://github.com/CITi-UFPE) - contato@citi.org.br
-- [João Pedro Bezerra](https://github.com/jpbezera), Líder de Dados em 2025.2 - jpbmtl@cin.ufpe.br
+construcao_rag
+
+Embedder utilizado:
+
+bash
+Copy code
+GeminiEmbedder(id="text-embedding-004")
+📁 Estrutura do Projeto
+css
+Copy code
+app/
+  agents/
+    tech_agent.py
+    home_agent.py
+    construcao_agent.py
+    team.py
+  alimentacao.py
+  main.py
+
+data/
+  midia_eletronicos_artes_papelaria/
+  casa_familia_moda/
+  jardinagem_construcao_servicos/
+
+chromadb_storage/
+venv/
+README.md
+🚀 Execução
+1. Alimentação dos Bancos Vetoriais
+python
+Copy code
+from app.alimentacao import criar_banco_vetorial, realizar_alimentacao
+
+db = criar_banco_vetorial("tech_rag", "tech")
+realizar_alimentacao("data/midia_eletronicos_artes_papelaria", db)
+Repetir para:
+
+home_rag com pasta casa_familia_moda
+
+construcao_rag com pasta jardinagem_construcao_servicos
+
+2. Rodar API
+bash
+Copy code
+uvicorn app.main:app --reload
+3. Abrir Playground
+Acessar:
+
+bash
+Copy code
+https://app.agno.com/playground?endpoint=http://localhost:7777
+🧪 Testes Realizados
+✔ Perguntas sobre especificações técnicas
+✔ Citações corretas dos PDFs
+✔ Nenhuma invenção
+✔ Roteamento fiel
+✔ Respostas padronizadas
+
+Exemplo real
+Pergunta:
+
+nginx
+Copy code
+Esse monitor tem VESA?
+Resposta:
+
+makefile
+Copy code
+TechExpert: Sim, o modelo X possui padrões VESA 75x75 e 100x100.
+Fontes: catalogo_monitores.pdf
+Outro exemplo
+Pergunta:
+
+nginx
+Copy code
+Essa roupa infantil aparece nos PDFs?
+Resposta:
+
+makefile
+Copy code
+HomeExpert: Sim, há PDF contendo catálogo de roupas infanto-juvenis.
+Fontes: fashion_roupa_infanto_juvenil.pdf
+Se a pergunta não pertence ao agente:
+
+css
+Copy code
+Este tema pertence a outro agente.
+Se não há dados:
+
+powershell
+Copy code
+Não há dados suficientes nos PDFs para responder.
+🎉 Resultado Final
+O sistema entrega:
+
+✔ Arquitetura multiagente robusta
+✔ Roteador com delegação automática
+✔ Três agentes especialistas independentes
+✔ Respostas técnicas baseadas em PDFs
+✔ Reconhecimento de domínio
+✔ Nenhuma invenção
+✔ Modelo utilizado: Gemini 2.5-flash
+
+🏁 Conclusão
+Este projeto demonstra um pipeline completo de:
+
+ingestão de PDFs
+
+criação de banco vetorial
+
+construção de agentes especialistas
+
+roteamento automático
+
+interface via Playground Agno
+
+Permitindo que qualquer pessoa faça perguntas em linguagem natural sobre produtos — com respostas fidedignas, técnicas e verificáveis.
+
