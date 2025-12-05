@@ -4,25 +4,14 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.google import Gemini
 
-from app.alimentacao import criar_banco_vetorial
+# 🟦 IMPORTANTE: Importa o knowledge gerado pela ingestão!
+# Esse knowledge está cheio de chunks reais dos PDFs.
+from ingest import knowledge_tech
 
 load_dotenv()
 
-TECH_PDFS_DIR = "data/midia_eletronicos_artes_papelaria"
-
 
 def create_tech_agent():
-
-    # 1. Apenas aponta para o banco já ingestido
-    vector_db = criar_banco_vetorial("tech_rag", "tech")
-
-    # 2. NÃO chamamos realizar_alimentacao aqui
-    # (se chamar, duplica ou sobrescreve!)
-
-    # 3. Cria o Knowledge limpo, apontando para o vector_db certo
-    from agno.knowledge.agent import AgentKnowledge
-    knowledge = AgentKnowledge(vector_db=vector_db)
-
 
     SYSTEM_PROMPT = """
 Você é o CatalogExpert da O-Market, um agente unificado especializado em responder
@@ -88,7 +77,7 @@ REGRAS ABSOLUTAS
 
     return Agent(
         name="TechExpert",
-        model=Gemini(id="gemini-2.0-flash"),
-        knowledge=knowledge,
+        model=Gemini(id="gemini-2.5-flash"),
+        knowledge=knowledge_tech,  #  ✔️ AGORA SIM! Knowledge REAL da ingestão.
         description=SYSTEM_PROMPT,
     )
